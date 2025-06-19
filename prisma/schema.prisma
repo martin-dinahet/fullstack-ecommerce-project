@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id              String      @id @default(uuid())
+  type            ProductType
+  name            String
+  description     String
+  imgPath         String
+  price           String
+}
+
+enum ProductType {
+  TABLET
+  LAPTOP
+  SMARTPHONE
+  SMARTWATCH
+}
