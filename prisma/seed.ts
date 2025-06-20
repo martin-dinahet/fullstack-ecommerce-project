@@ -47,9 +47,21 @@ const productsData: Array<Prisma.ProductCreateInput> = [
   },
 ];
 
+const usersData: Array<Prisma.UserCreateInput> = [
+  {
+    username: "john23",
+    email: "john@mail.com",
+    password: "password123",
+    type: "ADMINISTRATOR",
+  },
+];
+
 export const main = async () => {
   for (const p of productsData) {
     await prisma.product.create({ data: p });
+  }
+  for (const u of usersData) {
+    await prisma.user.create({ data: u });
   }
 };
 

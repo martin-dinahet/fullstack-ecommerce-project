@@ -7,6 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id              String      @id @default(uuid())
+  type            UserType    @default(USER)
+  username        String
+  email           String      @unique
+  password        String
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
 model Product {
   id              String      @id @default(uuid())
   type            ProductType
@@ -14,6 +25,9 @@ model Product {
   description     String
   imgPath         String
   price           String
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 }
 
 enum ProductType {
@@ -21,4 +35,9 @@ enum ProductType {
   LAPTOP
   SMARTPHONE
   SMARTWATCH
+}
+
+enum UserType {
+  USER
+  ADMINISTRATOR
 }
