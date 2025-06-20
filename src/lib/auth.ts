@@ -5,9 +5,15 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { decrypt } from "@/lib/jwt";
+import { decrypt } from "./jwt";
 
 const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+const registerSchema = z.object({
+  username: z.string().min(3),
   email: z.string().email(),
   password: z.string().min(8),
 });
@@ -19,13 +25,23 @@ export const login = async (_prevState: unknown, formData: FormData) => {
   if (!existingUser || existingUser.password !== result.data.password) {
     return { errors: { email: ["Invalid email or password"] } };
   }
-  await createSession(existingUser.id, existingUser.type);
-  redirect("/admin/dashboard");
+  await createSession(existingUser.id);
+  redirect("/dashboard");
 };
 
 export const logout = async (_prevState: unknown, _formData: FormData) => {
   await deleteSession();
-  redirect("/admin/login");
+  redirect("/login");
+};
+
+export const register = async (_prevState: unknown, formData: FormData) => {
+  const result = registerSchema.safeParse(Object.fromEntries(formData));
+  if (!result.success) return { errors: result.error.flatten().fieldErrors };
+  const existingUser = await prisma.user.findUnique({ where: { email: result.data.email } });
+  if (existingUser) return { errors: { email: ["Email already in use"] } };
+  const newUser = await prisma.user.create({ data: result.data });
+  await createSession(newUser.id);
+  redirect("/dashboard");
 };
 
 export const getCurrentUser = async () => {
@@ -34,7 +50,7 @@ export const getCurrentUser = async () => {
   const payload = await decrypt(session.value);
   const user = await prisma.user.findUnique({
     where: { id: payload?.userId as string },
-    select: { id: true, username: true, email: true, type: true },
+    select: { id: true, username: true, email: true },
   });
   return user;
 };

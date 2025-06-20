@@ -1,21 +1,23 @@
+import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { decrypt } from "@/lib/jwt";
-import { NextRequest, NextResponse } from "next/server";
 
 const middleware = async (request: NextRequest) => {
-  const protectedRoutes = ["/admin/dashboard"];
-  const publicRoutes = ["/", "/admin/login"];
+  const protectedRoutes = ["/dashboard"];
+  const publicRoutes = ["/", "/auth"];
   const path = request.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
-  const isPublicRoute = publicRoutes.includes(path);
+  const isProtectedRoute = protectedRoutes.some((route) => path.startsWith(route));
+  const isPublicRoute = publicRoutes.some((route) => path.startsWith(route));
   const cookie = request.cookies.get("session")?.value;
   const session = await decrypt(cookie);
   const isLoggedIn = !!session?.userId;
-  const isAdmin = session?.type === "ADMINISTRATOR";
 
-  if (isProtectedRoute && (!isLoggedIn || !isAdmin))
-    return NextResponse.redirect(new URL("/admin/login", request.nextUrl));
-  if (isPublicRoute && isLoggedIn && isAdmin)
-    return NextResponse.redirect(new URL("/admin/dashboard", request.nextUrl));
+  if (isProtectedRoute && !isLoggedIn) {
+    return NextResponse.redirect(new URL("/auth/login", request.nextUrl));
+  }
+  if (isPublicRoute && isLoggedIn) {
+    return NextResponse.redirect(new URL("/dashboard/home", request.nextUrl));
+  }
   return NextResponse.next();
 };
 

@@ -1,10 +1,5 @@
 import "@/globals.css";
 
-export const metadata = {
-  title: "Fullstack App Quickstart",
-  description: "Made with <3 by Martin Dinahet",
-};
-
 type Props = {
   children: React.ReactNode;
 };

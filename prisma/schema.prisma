@@ -9,7 +9,6 @@ datasource db {
 
 model User {
   id              String      @id @default(uuid())
-  type            UserType    @default(USER)
   username        String
   email           String      @unique
   password        String
@@ -18,26 +17,3 @@ model User {
   updatedAt       DateTime    @updatedAt
 }
 
-model Product {
-  id              String      @id @default(uuid())
-  type            ProductType
-  name            String
-  description     String
-  imgPath         String
-  price           String
-
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-}
-
-enum ProductType {
-  TABLET
-  LAPTOP
-  SMARTPHONE
-  SMARTWATCH
-}
-
-enum UserType {
-  USER
-  ADMINISTRATOR
-}

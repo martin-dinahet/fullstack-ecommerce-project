@@ -5,7 +5,6 @@ const encodedKey = new TextEncoder().encode(secretKey);
 
 type SessionPayload = {
   userId: string;
-  type: "USER" | "ADMINISTRATOR";
   expiresAt: Date;
 };
 
