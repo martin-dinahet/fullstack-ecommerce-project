@@ -26,12 +26,12 @@ export const login = async (_prevState: unknown, formData: FormData) => {
     return { errors: { email: ["Invalid email or password"] } };
   }
   await createSession(existingUser.id);
-  redirect("/dashboard");
+  redirect("/dashboard/home");
 };
 
 export const logout = async (_prevState: unknown, _formData: FormData) => {
   await deleteSession();
-  redirect("/login");
+  redirect("/auth/login");
 };
 
 export const register = async (_prevState: unknown, formData: FormData) => {
@@ -41,7 +41,7 @@ export const register = async (_prevState: unknown, formData: FormData) => {
   if (existingUser) return { errors: { email: ["Email already in use"] } };
   const newUser = await prisma.user.create({ data: result.data });
   await createSession(newUser.id);
-  redirect("/dashboard");
+  redirect("/dashboard/home");
 };
 
 export const getCurrentUser = async () => {
